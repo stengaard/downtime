@@ -13,6 +13,7 @@ func usage() {
 	me := path.Base(os.Args[0])
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", me)
 	fmt.Fprintf(os.Stderr, " %s <start_date> <end_date> <downtime_duration>\n", me)
+	fmt.Fprintf(os.Stderr, "Note: Both dates are included in the time range")
 	flag.PrintDefaults()
 
 }
@@ -37,6 +38,9 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Could not parse end date: %v", err)
 		os.Exit(1)
 	}
+	// [d1 -- d2], since the date is 00:00 UTC we should really add 24 hours to the
+	// end date in order to include that whole day.
+	end = end.Add(24 * time.Hour)
 	d, err := time.ParseDuration(flag.Arg(2))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not parse downtime duration: %v", err)
